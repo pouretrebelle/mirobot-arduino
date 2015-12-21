@@ -105,39 +105,77 @@ void Mirobot::setHwVersion(char &version){
 void Mirobot::takeUpSlack(byte motor1Dir, byte motor2Dir){
   // Take up the slack on each motor
   if(motor1.lastDirection != motor1Dir){
-    motor1.turn(settings.slackCalibration, motor1Dir);
+    motor1.turn(settings.slackCalibration, motor1Dir, 1);
   }
   if(motor2.lastDirection != motor2Dir){
-    motor2.turn(settings.slackCalibration, motor2Dir);
+    motor2.turn(settings.slackCalibration, motor2Dir, 1);
   }
 }
 
 void Mirobot::forward(int distance){
   takeUpSlack(FORWARD, BACKWARD);
-  motor1.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD);
-  motor2.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD);
+  motor1.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD, 1);
+  motor2.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD, 1);
   wait();
 }
 
 void Mirobot::back(int distance){
   takeUpSlack(BACKWARD, FORWARD);
-  motor1.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD);
-  motor2.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD);
+  motor1.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD, 1);
+  motor2.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD, 1);
   wait();
 }
 
 void Mirobot::left(int angle){
   takeUpSlack(FORWARD, FORWARD);
-  motor1.turn(angle * steps_per_degree * settings.turnCalibration, FORWARD);
-  motor2.turn(angle * steps_per_degree * settings.turnCalibration, FORWARD);
+  motor1.turn(angle * steps_per_degree * settings.turnCalibration, FORWARD, 1);
+  motor2.turn(angle * steps_per_degree * settings.turnCalibration, FORWARD, 1);
   wait();
 }
 
 void Mirobot::right(int angle){
   takeUpSlack(BACKWARD, BACKWARD);
-  motor1.turn(angle * steps_per_degree * settings.turnCalibration, BACKWARD);
-  motor2.turn(angle * steps_per_degree * settings.turnCalibration, BACKWARD);
+  motor1.turn(angle * steps_per_degree * settings.turnCalibration, BACKWARD, 1);
+  motor2.turn(angle * steps_per_degree * settings.turnCalibration, BACKWARD, 1);
   wait();
+}
+
+void Mirobot::arcleft(int args) {
+  int distance = floor(args / 1000);
+  int angle = args - distance * 1000;
+  int bigger = ( distance * steps_per_mm * settings.moveCalibration + angle * steps_per_degree * settings.turnCalibration );
+  int smaller = ( distance * steps_per_mm * settings.moveCalibration - angle * steps_per_degree * settings.turnCalibration );
+  float often = sqrt( smaller * smaller ) / bigger;
+  if (smaller < 0) {
+    takeUpSlack(FORWARD, FORWARD);
+    motor2.turn(bigger, FORWARD, often);
+    motor1.turn(bigger, FORWARD, 1);
+    wait();
+  } else {
+    takeUpSlack(FORWARD, BACKWARD);
+    motor2.turn(bigger, BACKWARD, often);
+    motor1.turn(bigger, FORWARD, 1);
+    wait();
+  }
+}
+
+void Mirobot::arcright(int args) {
+  int distance = floor(args / 1000);
+  int angle = args - distance * 1000;
+  int bigger = ( distance * steps_per_mm * settings.moveCalibration + angle * steps_per_degree * settings.turnCalibration );
+  int smaller = ( distance * steps_per_mm * settings.moveCalibration - angle * steps_per_degree * settings.turnCalibration );
+  float often = sqrt( smaller * smaller ) / bigger;
+  if (smaller < 0) {
+    takeUpSlack(BACKWARD, BACKWARD);
+    motor1.turn(bigger, BACKWARD, often);
+    motor2.turn(bigger, BACKWARD, 1);
+    wait();
+  } else {
+    takeUpSlack(FORWARD, BACKWARD);
+    motor1.turn(bigger, FORWARD, often);
+    motor2.turn(bigger, BACKWARD, 1);
+    wait();
+  }
 }
 
 void Mirobot::penup(){
@@ -355,8 +393,8 @@ void Mirobot::calibrateSlack(unsigned int amount){
   settings.slackCalibration = amount;
   saveSettings();
   calibratingSlack = true;
-  motor1.turn(1, FORWARD);
-  motor2.turn(1, BACKWARD);
+  motor1.turn(1, FORWARD, 1);
+  motor2.turn(1, BACKWARD, 1);
 }
 
 void Mirobot::calibrateMove(float amount){

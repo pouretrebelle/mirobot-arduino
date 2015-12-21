@@ -64,6 +64,8 @@ class Mirobot {
     void back(int distance);
     void right(int angle);
     void left(int angle);
+    void arcleft(int args);
+    void arcright(int args);
     void penup();
     void pendown();
     void pause();

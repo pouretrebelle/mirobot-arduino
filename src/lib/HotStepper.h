@@ -19,7 +19,7 @@ class HotStepper {
     static void setup();
     static void setup(char timer);
     void instanceSetup();
-    void turn(long steps, byte direction);
+    void turn(long steps, byte direction, float often);
     boolean ready();
     long remaining();
     void release();
@@ -36,6 +36,9 @@ class HotStepper {
     volatile uint8_t* _port;
     byte _pinmask;
     volatile long _remaining;
+    volatile float _often;
+    volatile long _skipped;
+    volatile long _done;
     byte _dir;
     byte nextStep();
     void setStep(byte);

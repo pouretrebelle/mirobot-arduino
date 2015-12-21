@@ -10,6 +10,9 @@ HotStepper::HotStepper(volatile uint8_t* port, byte pinmask) {
   _port = port;
   _pinmask = pinmask;
   _remaining = 0;
+  _often = 1;
+  _skipped = 0;
+  _done = 0;
   _paused = false;
   release();
   if(firstInstance){
@@ -91,7 +94,10 @@ void HotStepper::stop(){
   _remaining = 0;
 }
 
-void HotStepper::turn(long steps, byte direction){
+void HotStepper::turn(long steps, byte direction, float often){
+  _often = often;
+  _skipped = 0;
+  _done = 0;
   _remaining = steps;
   _dir = direction;
   lastDirection = direction;
@@ -121,11 +127,18 @@ byte HotStepper::nextStep(){
 }
 
 void HotStepper::setNextStep(){
-  if(_remaining > 0 && !_paused){
+  if (_often < (_done / (_done + _skipped))) {
+    _skipped++;
     _remaining--;
-    setStep(nextStep());
-  }else{
     release();
+  } else {
+    if (_remaining > 0 && !_paused) {
+      _done++;
+      _remaining--;
+      setStep(nextStep());
+    } else {
+      release();
+    }
   }
 }
 

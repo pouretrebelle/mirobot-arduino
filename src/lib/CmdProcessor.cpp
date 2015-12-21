@@ -348,6 +348,10 @@ void CmdProcessor::processCmd(char &cmd, char &arg, char &id){
         _m->right(atoi(&arg));
       }else if(!strcmp(&cmd, "left")){
         _m->left(atoi(&arg));
+      }else if(!strcmp(&cmd, "arcright")){
+        _m->arcright(atoi(&arg));
+      }else if(!strcmp(&cmd, "arcleft")){
+        _m->arcleft(atoi(&arg));
       }else if(!strcmp(&cmd, "penup")){
         _m->penup();
       }else if(!strcmp(&cmd, "pendown")){

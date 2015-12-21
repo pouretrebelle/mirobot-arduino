@@ -3,7 +3,9 @@ setup	KEYWORD2
 forward	KEYWORD2
 back	KEYWORD2
 right	KEYWORD2
-left	KEYWORD2
+left    KEYWORD2
+arcleft KEYWORD2
+arcright    KEYWORD2
 penup	KEYWORD2
 pendown	KEYWORD2
 pause	KEYWORD2
