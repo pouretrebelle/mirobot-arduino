@@ -140,42 +140,18 @@ void Mirobot::right(int angle){
   wait();
 }
 
-void Mirobot::arcleft(int args) {
-  int distance = floor(args / 1000);
-  int angle = args - distance * 1000;
-  int bigger = ( distance * steps_per_mm * settings.moveCalibration + angle * steps_per_degree * settings.turnCalibration );
-  int smaller = ( distance * steps_per_mm * settings.moveCalibration - angle * steps_per_degree * settings.turnCalibration );
-  float often = sqrt( smaller * smaller ) / bigger;
-  if (smaller < 0) {
-    takeUpSlack(FORWARD, FORWARD);
-    motor2.turn(bigger, FORWARD, often);
-    motor1.turn(bigger, FORWARD, 1);
-    wait();
-  } else {
-    takeUpSlack(FORWARD, BACKWARD);
-    motor2.turn(bigger, BACKWARD, often);
-    motor1.turn(bigger, FORWARD, 1);
-    wait();
-  }
+void Mirobot::arcleft(int distance) {
+  takeUpSlack(FORWARD, BACKWARD);
+  motor1.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD, 1);
+  motor2.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD, 0);
+  wait();
 }
 
-void Mirobot::arcright(int args) {
-  int distance = floor(args / 1000);
-  int angle = args - distance * 1000;
-  int bigger = ( distance * steps_per_mm * settings.moveCalibration + angle * steps_per_degree * settings.turnCalibration );
-  int smaller = ( distance * steps_per_mm * settings.moveCalibration - angle * steps_per_degree * settings.turnCalibration );
-  float often = sqrt( smaller * smaller ) / bigger;
-  if (smaller < 0) {
-    takeUpSlack(BACKWARD, BACKWARD);
-    motor1.turn(bigger, BACKWARD, often);
-    motor2.turn(bigger, BACKWARD, 1);
-    wait();
-  } else {
-    takeUpSlack(FORWARD, BACKWARD);
-    motor1.turn(bigger, FORWARD, often);
-    motor2.turn(bigger, BACKWARD, 1);
-    wait();
-  }
+void Mirobot::arcright(int distance) {
+  takeUpSlack(FORWARD, BACKWARD);
+  motor1.turn(distance * steps_per_mm * settings.moveCalibration, FORWARD, 0);
+  motor2.turn(distance * steps_per_mm * settings.moveCalibration, BACKWARD, 1);
+  wait();
 }
 
 void Mirobot::penup(){

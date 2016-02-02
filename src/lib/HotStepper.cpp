@@ -127,18 +127,18 @@ byte HotStepper::nextStep(){
 }
 
 void HotStepper::setNextStep(){
-  if (_often < (_done / (_done + _skipped))) {
-    _skipped++;
-    _remaining--;
-    release();
-  } else {
-    if (_remaining > 0 && !_paused) {
-      _done++;
+  if (_remaining > 0) {
+    if (_often > 0.5) {
       _remaining--;
+      _done++;
       setStep(nextStep());
-    } else {
+    }  else {
+      _remaining = 0;
+      _skipped++;
       release();
     }
+  } else {
+    release();
   }
 }
 
